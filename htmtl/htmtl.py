@@ -49,11 +49,13 @@ class Htmtl:
         self.__template = template
         self.__ir_block_pos_nodes = []
         self.__ir_block_nodes = []
-        self.__parse_ir_block_pos_nodes()
+        self.__create_ir_block_pos_nodes()
         self.__join_ir_block_pos_nodes()
-        self.__parse_ir_block_nodes()
+        self.__create_ir_block_nodes()
+        # self.__create_nodes()
+        # self.__run_attribute_parsers()
 
-    def __parse_ir_block_pos_nodes(self):
+    def __create_ir_block_pos_nodes(self):
         start = None
         end = None
 
@@ -100,13 +102,13 @@ class Htmtl:
                 continue
 
             ir_block_pos_nodes_within = self.__find_block_pos_nodes_in_coords(node.coords)
-            node.children = self.__recursively_build_ir_block_pos_node_children(ir_block_pos_nodes_within, processed_coords)
+            node.children = self.__recur_ir_block_pos_node_children(ir_block_pos_nodes_within, processed_coords)
 
         self.__ir_block_pos_nodes = [
             node for node in self.__ir_block_pos_nodes if node.coords not in processed_coords
         ]
 
-    def __recursively_build_ir_block_pos_node_children(self, child_nodes: list[Tuple[int, IRBlockPosNode]], processed_coords: set):
+    def __recur_ir_block_pos_node_children(self, child_nodes: list[Tuple[int, IRBlockPosNode]], processed_coords: set):
         children = []
 
         for idx, child_node in child_nodes:
@@ -115,7 +117,7 @@ class Htmtl:
 
             processed_coords.add(child_node.coords)
             child_node_children = self.__find_block_pos_nodes_in_coords(child_node.coords)
-            child_node.children = self.__recursively_build_ir_block_pos_node_children(child_node_children, processed_coords)
+            child_node.children = self.__recur_ir_block_pos_node_children(child_node_children, processed_coords)
             children.append(child_node)
 
         return children
@@ -132,7 +134,7 @@ class Htmtl:
 
         return found_block_position_nodes
 
-    def __parse_ir_block_nodes(self):
+    def __create_ir_block_nodes(self):
         pass
 
     @staticmethod
