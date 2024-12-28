@@ -1,5 +1,7 @@
 from __future__ import annotations
-from typing import Dict, Any, Tuple, Callable, Optional
+from typing import Dict, Any, Tuple, Callable, Optional, Union
+
+from pygments.util import tag_re
 
 
 class Node:
@@ -16,8 +18,7 @@ class Node:
 class IRBlockPosNode:
     name: str
     coords: Tuple[int, int]
-    moved: bool
-    children: list[IRBlockPosNode]
+    children: list[Union[IRBlockPosNode, str]]
 
     def __init__(self, name: str, coords: Tuple[int, int]):
         self.name = name
@@ -26,11 +27,10 @@ class IRBlockPosNode:
 
 class IRBlockNode:
     name: str
-    children: list[IRBlockNode]
+    children: list[Union[IRBlockNode, str]]
 
     def __init__(self, name: str, children: list[IRBlockNode]):
         self.name = name
-        self.moved = False
         self.children = children
 
 
@@ -50,40 +50,72 @@ class Htmtl:
         self.__ir_block_pos_nodes = []
         self.__ir_block_nodes = []
         self.__create_ir_block_pos_nodes()
+        self.__fill_ir_block_pos_node_caps()
         self.__join_ir_block_pos_nodes()
-        self.__create_ir_block_nodes()
-        # self.__create_nodes()
-        # self.__run_attribute_parsers()
+        #self.__create_ir_block_nodes()
+        self.__create_nodes()
+        self.__run_attribute_parsers()
 
     def __create_ir_block_pos_nodes(self):
-        start = None
-        end = None
+        tag_start = None
+        tag_end = None
+        text_start = None
+        text_end = None
 
         for idx, part in enumerate(self.__template):
             if part == "<":
-                start = idx
+                if text_start is not None:
+                    text_end = idx
+
+                tag_start = idx
 
             if part == ">":
-                end = idx + 1
+                tag_end = idx + 1
 
-            if start is not None and end is not None:
-                tag = self.__template[start:end]
+            if tag_start is not None and tag_end is not None:
+                tag = self.__template[tag_start:tag_end]
 
                 if tag.startswith("</"):
-                    self.__maybe_close_ir_block_pos_node(tag, end)
-                    start = None
-                    end = None
+                    self.__maybe_close_ir_block_pos_node(tag, tag_end)
+                    tag_start = None
+                    tag_end = None
                     continue
 
                 name = tag[1:-1].split(" ")[0].strip()
 
                 if name in self.__block_elements:
                     self.__ir_block_pos_nodes.append(
-                        IRBlockPosNode(name=name, coords=(end, 0))
+                        IRBlockPosNode(
+                            name=name,
+                            coords=(tag_start, 0)
+                        )
                     )
 
-                start = None
-                end = None
+                if name in self.__inline_elements:
+                    self.__ir_block_pos_nodes.append(
+                        IRBlockPosNode(
+                            name=name,
+                            coords=(tag_start, tag_end)
+                        )
+                    )
+
+                tag_start = None
+                tag_end = None
+                continue
+
+            if tag_start is None and tag_end is None and text_start is None:
+                text_start = idx
+
+            if text_start is not None and text_end is not None:
+                self.__ir_block_pos_nodes.append(
+                    IRBlockPosNode(
+                        name="text",
+                        coords=(text_start, text_end),
+                    )
+                )
+
+                text_start = None
+                text_end = None
 
     def __maybe_close_ir_block_pos_node(self, tag: str, coord: int):
         el_name = tag[2:-1].split(' ')[0].strip()
@@ -134,7 +166,35 @@ class Htmtl:
 
         return found_block_position_nodes
 
+    def __fill_ir_block_pos_node_caps(self):
+        """
+        Finds coordinate caps between `IRBlockPosNode`'s, parses them and inserts them into
+        the linear list of `IRBlockPosNode`'s. The caps happen because up until this point
+        we've only parsed for block nodes, but not inline or text nodes.
+        """
+        pass
+
     def __create_ir_block_nodes(self):
+        """
+        Creates IRBlockNode's out of IRBlockPosNode's. When IRBlockPosNode is nothing, but the node name,
+        its coordinates, and its children, then IRBlockNode expands on this and extracts any text and
+        inline nodes as well.
+        """
+        nodes = []
+
+        for ir_block_pos_node in self.__ir_block_pos_nodes:
+            if len(ir_block_pos_node.children) == 0:
+                nodes.append(IRBlockNode(
+                    name=ir_block_pos_node.name,
+                    children=[] # todo get text and inline nodes
+                ))
+
+        self.__ir_block_nodes = nodes
+
+    def __create_nodes(self):
+        pass
+
+    def __run_attribute_parsers(self):
         pass
 
     @staticmethod
