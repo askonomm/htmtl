@@ -36,17 +36,15 @@ class Htmtl:
     __template: str = ""
     __ir_block_pos_nodes: list[IRBlockPosNode] = []
     __ir_block_nodes: list[IRBlockNode] = []
-    __block_elements = ["div", "span", "a"]
-    __inline_elements = ["img"]
+    __block_elements = ["html", "head", "body", "div", "span", "a"]
+    __inline_elements = ["!doctype", "img"]
 
     def __init__(self, template: str):
         self.__template = template
         self.__ir_block_pos_nodes = []
         self.__ir_block_nodes = []
         self.__create_ir_block_pos_nodes()
-        self.__fill_ir_block_pos_node_caps()
         self.__join_ir_block_pos_nodes()
-        # self.__create_ir_block_nodes()
         self.__create_nodes()
         self.__run_attribute_parsers()
 
@@ -77,12 +75,12 @@ class Htmtl:
 
                 name = tag[1:-1].split(" ")[0].strip()
 
-                if name in self.__block_elements:
+                if name.lower() in self.__block_elements:
                     self.__ir_block_pos_nodes.append(
                         IRBlockPosNode(name=name, coords=(tag_start, 0))
                     )
 
-                if name in self.__inline_elements:
+                if name.lower() in self.__inline_elements:
                     self.__ir_block_pos_nodes.append(
                         IRBlockPosNode(name=name, coords=(tag_start, tag_end))
                     )
@@ -95,21 +93,17 @@ class Htmtl:
                 text_start = idx
 
             if text_start is not None and text_end is not None:
-                self.__ir_block_pos_nodes.append(
-                    IRBlockPosNode(
-                        name="text",
-                        coords=(text_start, text_end),
-                    )
-                )
+                self.__ir_block_pos_nodes.append(IRBlockPosNode(
+                    name="text",
+                    coords=(text_start, text_end)
+                ))
 
                 text_start = None
                 text_end = None
 
     def __maybe_close_ir_block_pos_node(self, tag: str, coord: int):
         el_name = tag[2:-1].split(" ")[0].strip()
-        match = self.__find_last_match(
-            self.__ir_block_pos_nodes, lambda node: node.name == el_name
-        )
+        match = self.__find_last_ir_block_pos_match(lambda node: node.name == el_name)
 
         if match is not None:
             [idx, last_ir_pos_node] = match
@@ -170,46 +164,18 @@ class Htmtl:
 
         return found_block_position_nodes
 
-    def __fill_ir_block_pos_node_caps(self):
-        """
-        Finds coordinate caps between `IRBlockPosNode`'s, parses them and inserts them into
-        the linear list of `IRBlockPosNode`'s. The caps happen because up until this point
-        we've only parsed for block nodes, but not inline or text nodes.
-        """
-        pass
-
-    def __create_ir_block_nodes(self):
-        """
-        Creates IRBlockNode's out of IRBlockPosNode's. When IRBlockPosNode is nothing, but the node name,
-        its coordinates, and its children, then IRBlockNode expands on this and extracts any text and
-        inline nodes as well.
-        """
-        nodes = []
-
-        for ir_block_pos_node in self.__ir_block_pos_nodes:
-            if len(ir_block_pos_node.children) == 0:
-                nodes.append(
-                    IRBlockNode(
-                        name=ir_block_pos_node.name,
-                        children=[],  # todo get text and inline nodes
-                    )
-                )
-
-        self.__ir_block_nodes = nodes
-
     def __create_nodes(self):
         pass
 
     def __run_attribute_parsers(self):
         pass
 
-    @staticmethod
-    def __find_last_match(
-        arr: list[Any], condition: Callable[[Any], bool]
+    def __find_last_ir_block_pos_match(
+        self, condition: Callable[[Any], bool]
     ) -> Optional[Tuple[int, Any]]:
-        idx = len(arr)
+        idx = len(self.__ir_block_pos_nodes)
 
-        for item in reversed(arr):
+        for item in reversed(self.__ir_block_pos_nodes):
             idx -= 1
 
             if condition(item):
