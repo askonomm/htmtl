@@ -1,8 +1,6 @@
 from __future__ import annotations
 from typing import Dict, Any, Tuple, Callable, Optional, Union
 
-from pygments.util import tag_re
-
 
 class Node:
     name: str
@@ -38,12 +36,8 @@ class Htmtl:
     __template: str = ""
     __ir_block_pos_nodes: list[IRBlockPosNode] = []
     __ir_block_nodes: list[IRBlockNode] = []
-    __block_elements = [
-        "div", "span", "a"
-    ]
-    __inline_elements = [
-        "img"
-    ]
+    __block_elements = ["div", "span", "a"]
+    __inline_elements = ["img"]
 
     def __init__(self, template: str):
         self.__template = template
@@ -52,7 +46,7 @@ class Htmtl:
         self.__create_ir_block_pos_nodes()
         self.__fill_ir_block_pos_node_caps()
         self.__join_ir_block_pos_nodes()
-        #self.__create_ir_block_nodes()
+        # self.__create_ir_block_nodes()
         self.__create_nodes()
         self.__run_attribute_parsers()
 
@@ -85,18 +79,12 @@ class Htmtl:
 
                 if name in self.__block_elements:
                     self.__ir_block_pos_nodes.append(
-                        IRBlockPosNode(
-                            name=name,
-                            coords=(tag_start, 0)
-                        )
+                        IRBlockPosNode(name=name, coords=(tag_start, 0))
                     )
 
                 if name in self.__inline_elements:
                     self.__ir_block_pos_nodes.append(
-                        IRBlockPosNode(
-                            name=name,
-                            coords=(tag_start, tag_end)
-                        )
+                        IRBlockPosNode(name=name, coords=(tag_start, tag_end))
                     )
 
                 tag_start = None
@@ -118,8 +106,10 @@ class Htmtl:
                 text_end = None
 
     def __maybe_close_ir_block_pos_node(self, tag: str, coord: int):
-        el_name = tag[2:-1].split(' ')[0].strip()
-        match = self.__find_last_match(self.__ir_block_pos_nodes, lambda node: node.name == el_name)
+        el_name = tag[2:-1].split(" ")[0].strip()
+        match = self.__find_last_match(
+            self.__ir_block_pos_nodes, lambda node: node.name == el_name
+        )
 
         if match is not None:
             [idx, last_ir_pos_node] = match
@@ -133,14 +123,22 @@ class Htmtl:
             if node.coords in processed_coords:
                 continue
 
-            ir_block_pos_nodes_within = self.__find_block_pos_nodes_in_coords(node.coords)
-            node.children = self.__recur_ir_block_pos_node_children(ir_block_pos_nodes_within, processed_coords)
+            ir_block_pos_nodes_within = self.__find_block_pos_nodes_in_coords(
+                node.coords
+            )
+            node.children = self.__recur_ir_block_pos_node_children(
+                ir_block_pos_nodes_within, processed_coords
+            )
 
         self.__ir_block_pos_nodes = [
-            node for node in self.__ir_block_pos_nodes if node.coords not in processed_coords
+            node
+            for node in self.__ir_block_pos_nodes
+            if node.coords not in processed_coords
         ]
 
-    def __recur_ir_block_pos_node_children(self, child_nodes: list[Tuple[int, IRBlockPosNode]], processed_coords: set):
+    def __recur_ir_block_pos_node_children(
+        self, child_nodes: list[Tuple[int, IRBlockPosNode]], processed_coords: set
+    ):
         children = []
 
         for idx, child_node in child_nodes:
@@ -148,13 +146,19 @@ class Htmtl:
                 continue
 
             processed_coords.add(child_node.coords)
-            child_node_children = self.__find_block_pos_nodes_in_coords(child_node.coords)
-            child_node.children = self.__recur_ir_block_pos_node_children(child_node_children, processed_coords)
+            child_node_children = self.__find_block_pos_nodes_in_coords(
+                child_node.coords
+            )
+            child_node.children = self.__recur_ir_block_pos_node_children(
+                child_node_children, processed_coords
+            )
             children.append(child_node)
 
         return children
 
-    def __find_block_pos_nodes_in_coords(self, coords: Tuple[int, int]) -> list[Tuple[int, IRBlockPosNode]]:
+    def __find_block_pos_nodes_in_coords(
+        self, coords: Tuple[int, int]
+    ) -> list[Tuple[int, IRBlockPosNode]]:
         found_block_position_nodes = []
         [start, end] = coords
 
@@ -184,10 +188,12 @@ class Htmtl:
 
         for ir_block_pos_node in self.__ir_block_pos_nodes:
             if len(ir_block_pos_node.children) == 0:
-                nodes.append(IRBlockNode(
-                    name=ir_block_pos_node.name,
-                    children=[] # todo get text and inline nodes
-                ))
+                nodes.append(
+                    IRBlockNode(
+                        name=ir_block_pos_node.name,
+                        children=[],  # todo get text and inline nodes
+                    )
+                )
 
         self.__ir_block_nodes = nodes
 
@@ -198,7 +204,9 @@ class Htmtl:
         pass
 
     @staticmethod
-    def __find_last_match(arr: list[Any], condition: Callable[[Any], bool]) -> Optional[Tuple[int, Any]]:
+    def __find_last_match(
+        arr: list[Any], condition: Callable[[Any], bool]
+    ) -> Optional[Tuple[int, Any]]:
         idx = len(arr)
 
         for item in reversed(arr):
