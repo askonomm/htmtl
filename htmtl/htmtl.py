@@ -2,7 +2,9 @@ from typing import Any
 from dompa import Dompa
 from .attribute_parser import AttributeParser
 from .attribute_parsers.inner_text import InnerText
+from .attribute_parsers.outer_text import OuterText
 from .expression_modifier import ExpressionModifier
+from .expression_modifiers.truncate import Truncate
 from .expression_parser import ExpressionParser
 
 
@@ -16,13 +18,20 @@ class Htmtl:
         self.__dom = Dompa(template)
         self.__data = data or {}
         self.__attribute_parsers = self.__default_attribute_parsers()
-        self.__expression_modifiers = []
+        self.__expression_modifiers = self.__default_expression_modifiers()
         self.__parse()
 
     @staticmethod
     def __default_attribute_parsers() -> list[type[AttributeParser]]:
         return [
-            InnerText
+            InnerText,
+            OuterText,
+        ]
+
+    @staticmethod
+    def __default_expression_modifiers() -> list[type[ExpressionModifier]]:
+        return [
+            Truncate,
         ]
 
     def set_attribute_parsers(self, parsers: list[type[AttributeParser]]):

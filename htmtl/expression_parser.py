@@ -20,23 +20,23 @@ class ExpressionParser:
 
         # otherwise only parts of it are
         parsed_expression = ""
-        interpolation_start = None
-        interpolation_end = None
+        interp_start = None
+        interp_end = None
 
         for idx, char in enumerate(expression):
             parsed_expression += char
 
             if char == "{":
-                interpolation_start = idx
+                interp_start = idx
 
             if char == "}":
-                interpolation_end = idx + 1
+                interp_end = idx + 1
 
-            if interpolation_start is not None and interpolation_end is not None:
-                interpolation = expression[interpolation_start:interpolation_end]
-                parsed_expression = parsed_expression.replace(interpolation, self.__parse_interpolation(interpolation[1:-1]))
-                interpolation_start = None
-                interpolation_end = None
+            if interp_start is not None and interp_end is not None:
+                interp = expression[interp_start:interp_end]
+                parsed_expression = parsed_expression.replace(interp, self.__parse_interpolation(interp[1:-1]))
+                interp_start = None
+                interp_end = None
 
         return parsed_expression
 
@@ -60,7 +60,7 @@ class ExpressionParser:
             if modifier_instance.name == modifier_name:
                 return modifier_instance.modify(value, modifier_opts)
 
-        return None
+        return value
 
     def __var_to_val(self, var: str) -> Any:
         parts = var.split(".")

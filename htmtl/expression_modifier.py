@@ -8,3 +8,12 @@ class ExpressionModifier(ABC):
     @abstractmethod
     def modify(self, value: Any, opts: list[Any]) -> Any:
         pass
+
+
+def modifier(name: str):
+    def wrapper(cls: type[ExpressionModifier]):
+        cls.name = name
+
+        return cls
+
+    return wrapper

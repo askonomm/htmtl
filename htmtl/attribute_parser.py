@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 from dompa.nodes import Node
 
 from htmtl.expression_parser import ExpressionParser
@@ -17,5 +17,5 @@ class AttributeParser(ABC):
         return self.__expression_parser.parse(expression)
 
     @abstractmethod
-    def traverse(self, node: Node):
+    def traverse(self, node: Node) -> Optional[Node]:
         pass
