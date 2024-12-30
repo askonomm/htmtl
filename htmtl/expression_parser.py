@@ -1,5 +1,4 @@
 from typing import Dict, Any
-
 from .expression_modifier import ExpressionModifier
 
 

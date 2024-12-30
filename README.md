@@ -12,7 +12,7 @@ you to use any editor without needing any additional editor extensions.
 - **Partials**: You can include other templates inside your templates.
 - **Loops**: You can loop over iterable data.
 - **Extendable**: You can implement custom attribute parsers and expression modifiers.
-- 
+
 ## Example syntax
 
 ```html
