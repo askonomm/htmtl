@@ -2,7 +2,7 @@ from htmtl import Htmtl
 
 
 def main():
-    Htmtl("<!DOCTYPE html><html><head></head><body><div>as<img>more text goes here</div></body></html>").toHtml()
+    print(Htmtl("<div inner-text=\"hello\">asdasd</div>").html())
 
 
 if __name__ == "__main__":
