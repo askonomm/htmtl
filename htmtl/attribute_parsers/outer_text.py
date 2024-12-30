@@ -1,8 +1,12 @@
+from typing import Optional
+
 from dompa.nodes import Node, TextNode
 from ..attribute_parser import AttributeParser
 
 
 class OuterText(AttributeParser):
-    def traverse(self, node: Node):
+    def traverse(self, node: Node) -> Optional[Node]:
         if "outer-text" in node.attributes:
-            node.replace_with(TextNode(value=self.expression(node.attributes["outer-text"])))
+            return TextNode(value=self.expression(node.attributes["outer-text"]))
+
+        return node
