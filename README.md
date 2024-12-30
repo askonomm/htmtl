@@ -2,4 +2,393 @@
 
 HTMTL (HyperText Markup _Templating_ Language) is a templating language that uses HTML attributes for its rendering logic. 
 It is both a subset and superset of HTML, meaning that valid HTML is also valid HTMTL and valid HTMTL is also valid HTML, allowing 
-you to use any editor without needing any additional plugins.
+you to use any editor without needing any additional editor extensions.
+
+## Features
+
+- **Interpolation**: You can interpolate data from a data dictionary into your templates.
+- **Modifiers**: You can modify the interpolated values using modifiers.
+- **Conditionals**: You can show or hide blocks using expressions.
+- **Partials**: You can include other templates inside your templates.
+- **Loops**: You can loop over iterable data.
+- **Extendable**: You can implement custom attribute parsers and expression modifiers.
+- 
+## Example syntax
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title inner-text="{title}"></title>
+</head>
+<body>
+    <h1 inner-text="{title}"></h1>
+    
+    <div class="posts" if="posts">
+        <div foreach="posts as post">
+            <h2 class="post-title">
+                <a :href="/blog/{post.url}" inner-text="{post.title | capitalize}"></a>
+            </h2>
+            <div class="post-date" inner-text="{post.date | date:yyyy-MM-dd}"></div>
+            <div class="post-content" inner-html="{post.body}"></div>
+        </div>
+    </div>
+</body>
+</html>
+```
+
+## Installation
+
+```
+pip install htmtl
+```
+
+## Usage
+
+A simple example of how to use HTMTL with default configuration looks like this:
+
+```python
+from htmtl import Htmtl
+
+htmtl = Htmtl('<p inner-text="Hello {who}"></p>', {'who': 'World'})
+html = htmtl.html() # returns: <p>Hello World</p>
+```
+
+## Attributes
+
+HTMTL works by parsing attributes in the template. 
+
+### `inner-text`
+
+Sets the inner text of the element to the value of the attribute.
+
+HTMTL template where `title` key is `Hello, World!`:
+
+```html
+<h1 inner-text="{title}"></h1>
+```
+
+Results in:
+
+```html
+<h1>Hello, World!</h1>
+```
+
+### `inner-html`
+
+Sets the inner HTML of the element to the value of the attribute.
+
+HTMTL template where `content` key is `<p>Hello, World!</p>`:
+
+```html
+<div inner-html="{content}"></div>
+```
+
+Results in:
+
+```html
+<div>
+    <p>Hello, World!</p>
+</div>
+```
+
+### `inner-partial`
+
+Sets the inner HTML of the element to the value of the parsed HTMTL template. Inherits all the same data 
+as the parent template. 
+
+HTMTL template with data such as:
+
+```python
+data = {
+    'title': 'My Web Portal Thing',
+    'header': '<div class="header"><h1 inner-text="title"></h1></div>'
+}
+```
+
+And where the template is:
+
+```html
+<div inner-partial="header"></div>
+```
+
+Results in:
+
+```html
+<div>
+    <div class="header">
+        <h1>My Web Portal Thing</h1>
+    </div>
+</div>
+```
+
+### `outer-text`
+
+Sets the outer text of the element to the value of the attribute.
+
+HTMTL template where `title` key is `Hello, World!`:
+
+```html
+<h1 outer-text="{title}"></h1>
+```
+
+Results in:
+
+```html
+Hello, World!
+```
+
+### `outer-html`
+
+Sets the outer HTML of the element to the value of the attribute.
+
+HTMTL template where `content` key is `<p>Hello, World!</p>`:
+
+```html
+<div outer-html="{content}"></div>
+```
+
+Results in:
+
+```html
+<p>Hello, World!</p>
+```
+
+### `outer-partial`
+
+Sets the outer HTML of the element to the value of the parsed Toretto template. Inherits all the same data
+as the parent template.
+
+HTMTL template with data such as:
+
+```python
+data = {
+    'title': 'My Web Portal Thing',
+    'header': '<div class="header"><h1 inner-text="title"></h1></div>'
+}
+```
+
+And where the template is:
+
+```html
+<div outer-partial="header"></div>
+```
+
+Results in:
+
+```html
+<div class="header">
+    <h1>My Web Portal Thing</h1>
+</div>
+```
+
+### `if`
+
+Removes the element if the attribute is false-y.
+
+HTMTL template where `show` key is `False`:
+
+```html
+<div if="show">Hello, World!</div>
+```
+
+Results in:
+
+```html
+<!-- Empty -->
+```
+
+### `unless`
+
+Removes the element if the attribute is truthy.
+
+HTMTL template where `hide` key is `True`:
+
+```html
+<div unless="hide">Hello, World!</div>
+```
+
+Results in:
+
+```html
+<!-- Empty -->
+```
+
+### `foreach`
+
+Loops anything iterable. 
+
+For example, to loop over a collection of `posts` and then use `post` as the variable of each iteration, you can do something 
+like this:
+
+```php
+<div foreach="posts as post">
+    <h2 inner-text="post.title"></h2>
+</div>
+```
+
+If you do not care about using any of the iteration data, you can also entirely omit `as ...` from the expression, 
+like so:
+
+```php
+<div foreach="posts">
+    ...
+</div>
+```
+
+And, you can also assign the key of the iteration to a variable, like so:
+
+```php
+<div foreach="posts as index:post">
+    <h2 :class="post-{post.index}" inner-text="post.title"></h2>
+</div>
+```
+
+This would add the key of the iteration to as `post.index` variable, but you can name it whatever you want.
+
+### `:*` (Generic Value Attributes)
+
+You can use the `:*` attribute to set any attribute on an element to the interpolated value of the generic value attribute.
+
+For example, to set the `href` attribute of an element, you can use the `:href` attribute:
+
+```html
+<a :href="/blog/{slug}">Hello, World!</a>
+```
+
+Results in:
+
+```html
+<a href="/blog/hello-world">Hello, World!</a>
+```
+
+If the `slug` key is `hello-world`.
+
+## Modifiers
+
+All interpolated values in expressions can be modified using modifiers. Modifiers are applied to the value of the attribute, and they can be chained, like so:
+
+```html
+<h1 inner-text="{title | uppercase | reverse}"></h1>
+```
+
+Note that if you have nothing other than the interpolated variable in the attribute, then you can omit the curly brackets, and so 
+this would also work:
+
+```html
+<h1 inner-text="title | uppercase | reverse"></h1>
+```
+
+### `date`
+
+Parses the value into a formatted date string.
+
+```html
+<p inner-text="published_at | date:YYYY-mm-dd"></p>
+```
+
+### `truncate`
+
+Truncates the value to the specified length.
+
+```html
+<p inner-text="{title | truncate:10}"></p>
+```
+
+This also works on collections, so you can use `truncate` to limit items in an array as well.
+
+## Extending
+
+### Attribute Parsers
+
+You can add (or replace) attribute parsers in HTMTL when creating a new instance of the `Htmtl` class, like so:
+
+```python
+from htmtl import Htmtl
+from htmtl.attribute_parsers import InnerText
+
+htmtl = Htmtl('<p inner-text="Hello {who}"></p>', {'who': 'World'})
+htmtl.set_attribute_parsers([
+    InnerText,
+])
+
+html = htmtl.html() # returns: <p>Hello World</p>
+```
+
+Attribute parsers must extend the `AttributeParser` class, like so:
+
+```python
+from typing import Optional
+from dompa.nodes import Node, TextNode
+from htmtl import AttributeParser
+
+
+class InnerText(AttributeParser):
+    def traverse(self, node: Node) -> Optional[Node]:
+        if "inner-text" in node.attributes:
+            node.children = [TextNode(value=self.expression(node.attributes["inner-text"]))]
+            node.attributes.pop("inner-text")
+
+        return node
+```
+
+All attribute parsers traverse the entire DOM tree to do whatever DOM manipulation they want. It's important to know that 
+an attribute parser must have the `traverse` method, and it must return a `Node`, or `None` if you want to remove the `Node`.
+
+HTMTL is built upon the [Dompa](https://github.com/askonomm/dompa) HTML parser, so check that out for more granular info on things.
+
+#### List of built-in attribute parsers
+
+- `htmtl.attribute_parsers.GenericValue` - Parser the `:*` attributes. (**soon**)
+- `htmtl.attribute_parsers.If` - Parser the `if` attributes. (**soon**)
+- `htmtl.attribute_parsers.Unless` - Parser the `unless` attributes. (**soon**)
+- `htmtl.attribute_parsers.InnerPartial` - Parser the `inner-partial` attributes. (**soon**)
+- `htmtl.attribute_parsers.InnerHtml` - Parser the `inner-html` attributes. (**soon**)
+- `htmtl.attribute_parsers.InnerText` - Parser the `inner-text` attributes.
+- `htmtl.attribute_parsers.OuterPartial` - Parser the `outer-partial` attributes. (**soon**)
+- `htmtl.attribute_parsers.OuterHtml` - Parser the `outer-html` attributes. (**soon**)
+- `htmtl.attribute_parsers.OuterText` - Parser the `outer-text` attributes.
+- `htmtl.attribute_parsers.Foreach` - Parses the `foreach` attributes. (**soon**)
+
+### Expression Modifiers
+
+You can add (or replace) expression modifiers in HTMTL when creating a new instance of the `Htmtl` class, like so:
+
+```python
+from htmtl import Htmtl
+from htmtl.expression_modifiers import Truncate
+
+htmtl = Htmtl('<p inner-text="Hello {who}"></p>', {'who': 'World'})
+htmtl.set_expression_modifiers([
+    Truncate,
+])
+
+html = htmtl.html() # returns: <p>Hello World</p>
+```
+
+Expression modifiers must implement the `ExpressionModifier` class, like so:
+
+```python
+from typing import Any
+from htmtl import ExpressionModifier, modifier
+
+
+@modifier("truncate")
+class Truncate(ExpressionModifier):
+    def modify(self, value: Any, opts: list[Any]) -> Any:
+        if isinstance(value, str) and len(opts) > 0:
+            if all([x in "1234567890" for x in opts[0]]):
+                char_limit = int(opts[0])
+
+                if len(value) > char_limit:
+                    return f"{value[:char_limit - 3]}..."
+
+        return value
+```
+
+All expression modifiers need to have a name (that you will use in your templates), and you can name your modifier 
+with the `modifier` decorator.
+
+#### List of built-in expression modifiers
+
+- `htmtl.expression_modifiers.Truncate` - Truncates the value (both strings and collections).

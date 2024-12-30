@@ -19,7 +19,6 @@ class Htmtl:
         self.__data = data or {}
         self.__attribute_parsers = self.__default_attribute_parsers()
         self.__expression_modifiers = self.__default_expression_modifiers()
-        self.__parse()
 
     @staticmethod
     def __default_attribute_parsers() -> list[type[AttributeParser]]:
@@ -56,4 +55,6 @@ class Htmtl:
             self.__dom.update(parser_instance.traverse)
 
     def html(self) -> str:
+        self.__parse()
+
         return self.__dom.html()
