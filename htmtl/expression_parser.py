@@ -1,12 +1,12 @@
-from typing import Dict, Any
+from typing import Any
 from .expression_modifier import ExpressionModifier
 
 
 class ExpressionParser:
-    __data: Dict[str, Any]
+    __data: dict[str, Any]
     __expression_modifiers: list[type[ExpressionModifier]]
 
-    def __init__(self, data: Dict[str, Any], expression_modifiers: list[type[ExpressionModifier]]) -> None:
+    def __init__(self, data: dict[str, Any], expression_modifiers: list[type[ExpressionModifier]]) -> None:
         self.__data = data
         self.__expression_modifiers = expression_modifiers
 

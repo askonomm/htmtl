@@ -1,15 +1,15 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 from dompa.nodes import Node
 
 from htmtl.expression_parser import ExpressionParser
 
 
 class AttributeParser(ABC):
-    __data: Dict[str, Any]
+    __data: dict[str, Any]
     __expression_parser: ExpressionParser
 
-    def __init__(self, data: Dict[str, Any], expression_parser: ExpressionParser) -> None:
+    def __init__(self, data: dict[str, Any], expression_parser: ExpressionParser) -> None:
         self.__data = data
         self.__expression_parser = expression_parser
 

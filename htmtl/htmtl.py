@@ -52,7 +52,7 @@ class Htmtl:
 
         for parser in self.__attribute_parsers:
             parser_instance = parser(self.__data, expression_parser)
-            self.__dom.update(parser_instance.traverse)
+            self.__dom.traverse(parser_instance.traverse)
 
     def html(self) -> str:
         self.__parse()
