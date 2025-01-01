@@ -1,10 +1,10 @@
 from typing import Optional
 
 from dompa.nodes import Node, TextNode
-from ..attribute_parser import AttributeParser
+from ..parser import Parser
 
 
-class InnerText(AttributeParser):
+class InnerText(Parser):
     def traverse(self, node: Node) -> Optional[Node]:
         if "inner-text" in node.attributes:
             node.children = [TextNode(value=self.expression(node.attributes["inner-text"]))]

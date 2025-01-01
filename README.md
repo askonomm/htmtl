@@ -299,31 +299,31 @@ This also works on collections, so you can use `truncate` to limit items in an a
 
 ## Extending
 
-### Attribute Parsers
+### Parsers
 
-You can add (or replace) attribute parsers in HTMTL when creating a new instance of the `Htmtl` class, like so:
+You can add (or replace) parsers in HTMTL when creating a new instance of the `Htmtl` class, like so:
 
 ```python
 from htmtl import Htmtl
-from htmtl.attribute_parsers import InnerText
+from htmtl.parsers import InnerText
 
 htmtl = Htmtl('<p inner-text="Hello {who}"></p>', {'who': 'World'})
-htmtl.set_attribute_parsers([
+htmtl.set_parsers([
     InnerText,
 ])
 
 html = htmtl.html() # returns: <p>Hello World</p>
 ```
 
-Attribute parsers must extend the `AttributeParser` class, like so:
+Prsers must extend the `Parser` class, like so:
 
 ```python
 from typing import Optional
 from dompa.nodes import Node, TextNode
-from htmtl import AttributeParser
+from htmtl import Parser
 
 
-class InnerText(AttributeParser):
+class InnerText(Parser):
     def traverse(self, node: Node) -> Optional[Node]:
         if "inner-text" in node.attributes:
             node.children = [TextNode(value=self.expression(node.attributes["inner-text"]))]
@@ -332,49 +332,49 @@ class InnerText(AttributeParser):
         return node
 ```
 
-All attribute parsers traverse the entire DOM tree to do whatever DOM manipulation they want. It's important to know that 
-an attribute parser must have the `traverse` method, and it must return a `Node`, or `None` if you want to remove the `Node`.
+All parsers traverse the entire DOM tree to do whatever DOM manipulation they want. It's important to know that
+a parser must have the `traverse` method, and it must return a `Node`, or `None` if you want to remove the `Node`.
 
 HTMTL is built upon the [Dompa](https://github.com/askonomm/dompa) HTML parser, so check that out for more granular info on things.
 
-#### List of built-in attribute parsers
+#### List of built-in parsers
 
-- `htmtl.attribute_parsers.GenericValue` - Parser the `:*` attributes. (**soon**)
-- `htmtl.attribute_parsers.If` - Parser the `if` attributes. (**soon**)
-- `htmtl.attribute_parsers.Unless` - Parser the `unless` attributes. (**soon**)
-- `htmtl.attribute_parsers.InnerPartial` - Parser the `inner-partial` attributes. (**soon**)
-- `htmtl.attribute_parsers.InnerHtml` - Parser the `inner-html` attributes. (**soon**)
-- `htmtl.attribute_parsers.InnerText` - Parser the `inner-text` attributes.
-- `htmtl.attribute_parsers.OuterPartial` - Parser the `outer-partial` attributes. (**soon**)
-- `htmtl.attribute_parsers.OuterHtml` - Parser the `outer-html` attributes. (**soon**)
-- `htmtl.attribute_parsers.OuterText` - Parser the `outer-text` attributes.
-- `htmtl.attribute_parsers.Foreach` - Parses the `foreach` attributes. (**soon**)
+- `htmtl.parsers.GenericValue` - Parser the `:*` attributes. (**soon**)
+- `htmtl.parsers.If` - Parser the `if` attributes. (**soon**)
+- `htmtl.parsers.Unless` - Parser the `unless` attributes. (**soon**)
+- `htmtl.parsers.InnerPartial` - Parser the `inner-partial` attributes. (**soon**)
+- `htmtl.parsers.InnerHtml` - Parser the `inner-html` attributes. (**soon**)
+- `htmtl.parsers.InnerText` - Parser the `inner-text` attributes.
+- `htmtl.parsers.OuterPartial` - Parser the `outer-partial` attributes. (**soon**)
+- `htmtl.parsers.OuterHtml` - Parser the `outer-html` attributes. (**soon**)
+- `htmtl.parsers.OuterText` - Parser the `outer-text` attributes.
+- `htmtl.parsers.Foreach` - Parses the `foreach` attributes. (**soon**)
 
-### Expression Modifiers
+### Modifiers
 
-You can add (or replace) expression modifiers in HTMTL when creating a new instance of the `Htmtl` class, like so:
+You can add (or replace) modifiers in HTMTL when creating a new instance of the `Htmtl` class, like so:
 
 ```python
 from htmtl import Htmtl
-from htmtl.expression_modifiers import Truncate
+from htmtl.modifiers import Truncate
 
 htmtl = Htmtl('<p inner-text="Hello {who}"></p>', {'who': 'World'})
-htmtl.set_expression_modifiers([
+htmtl.set_modifiers([
     Truncate,
 ])
 
 html = htmtl.html() # returns: <p>Hello World</p>
 ```
 
-Expression modifiers must implement the `ExpressionModifier` class, like so:
+Mdifiers must extend the `Modifier` class, like so:
 
 ```python
 from typing import Any
-from htmtl import ExpressionModifier, modifier
+from htmtl import Modifier, modifier_name
 
 
-@modifier("truncate")
-class Truncate(ExpressionModifier):
+@modifier_name("truncate")
+class Truncate(Modifier):
     def modify(self, value: Any, opts: list[Any]) -> Any:
         if isinstance(value, str) and len(opts) > 0:
             if all([x in "1234567890" for x in opts[0]]):
@@ -386,9 +386,9 @@ class Truncate(ExpressionModifier):
         return value
 ```
 
-All expression modifiers need to have a name (that you will use in your templates), and you can name your modifier 
-with the `modifier` decorator.
+All modifiers need to have a name (that you will use in your templates), and you can name your modifier
+with the `modifier_name` decorator.
 
-#### List of built-in expression modifiers
+#### List of built-in modifiers
 
-- `htmtl.expression_modifiers.Truncate` - Truncates the value (both strings and collections).
+- `htmtl.modifiers.Truncate` - Truncates the value (both strings and collections).

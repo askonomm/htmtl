@@ -1,3 +1,3 @@
 from .htmtl import Htmtl
-from .attribute_parser import AttributeParser
-from .expression_modifier import ExpressionModifier, modifier
+from .parser import Parser
+from .modifier import Modifier, modifier_name

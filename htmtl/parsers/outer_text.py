@@ -1,10 +1,10 @@
 from typing import Optional
 
 from dompa.nodes import Node, TextNode
-from ..attribute_parser import AttributeParser
+from ..parser import Parser
 
 
-class OuterText(AttributeParser):
+class OuterText(Parser):
     def traverse(self, node: Node) -> Optional[Node]:
         if "outer-text" in node.attributes:
             return TextNode(value=self.expression(node.attributes["outer-text"]))

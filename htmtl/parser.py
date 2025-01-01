@@ -1,11 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import Any, Optional
 from dompa.nodes import Node
+from .expression_parser import ExpressionParser
 
-from htmtl.expression_parser import ExpressionParser
 
-
-class AttributeParser(ABC):
+class Parser(ABC):
     __data: dict[str, Any]
     __expression_parser: ExpressionParser
 

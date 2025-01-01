@@ -2,7 +2,7 @@ from abc import abstractmethod, ABC
 from typing import Any
 
 
-class ExpressionModifier(ABC):
+class Modifier(ABC):
     name: str
 
     @abstractmethod
@@ -10,8 +10,8 @@ class ExpressionModifier(ABC):
         pass
 
 
-def modifier(name: str):
-    def wrapper(cls: type[ExpressionModifier]):
+def modifier_name(name: str):
+    def wrapper(cls: type[Modifier]):
         cls.name = name
 
         return cls
