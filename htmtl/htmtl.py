@@ -1,7 +1,10 @@
 from typing import Any
 from dompa import Dompa
 from .parser import Parser
+from .parsers.generic_value import GenericValue
+from .parsers.inner_html import InnerHtml
 from .parsers.inner_text import InnerText
+from .parsers.outer_html import OuterHtml
 from .parsers.outer_text import OuterText
 from .modifier import Modifier
 from .modifiers.truncate import Truncate
@@ -21,7 +24,10 @@ class Htmtl:
         # set default attribute parsers
         self.__attribute_parsers = [
             InnerText,
+            InnerHtml,
             OuterText,
+            OuterHtml,
+            GenericValue,
         ]
 
         # set default expression modifiers

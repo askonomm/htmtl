@@ -339,14 +339,14 @@ HTMTL is built upon the [Dompa](https://github.com/askonomm/dompa) HTML parser, 
 
 #### List of built-in parsers
 
-- `htmtl.parsers.GenericValue` - Parser the `:*` attributes. (**soon**)
+- `htmtl.parsers.GenericValue` - Parser the `:*` attributes.
 - `htmtl.parsers.If` - Parser the `if` attributes. (**soon**)
 - `htmtl.parsers.Unless` - Parser the `unless` attributes. (**soon**)
 - `htmtl.parsers.InnerPartial` - Parser the `inner-partial` attributes. (**soon**)
-- `htmtl.parsers.InnerHtml` - Parser the `inner-html` attributes. (**soon**)
+- `htmtl.parsers.InnerHtml` - Parser the `inner-html` attributes.
 - `htmtl.parsers.InnerText` - Parser the `inner-text` attributes.
 - `htmtl.parsers.OuterPartial` - Parser the `outer-partial` attributes. (**soon**)
-- `htmtl.parsers.OuterHtml` - Parser the `outer-html` attributes. (**soon**)
+- `htmtl.parsers.OuterHtml` - Parser the `outer-html` attributes.
 - `htmtl.parsers.OuterText` - Parser the `outer-text` attributes.
 - `htmtl.parsers.Foreach` - Parses the `foreach` attributes. (**soon**)
 
