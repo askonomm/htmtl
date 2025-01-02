@@ -27,9 +27,9 @@ you to use any editor without needing any additional editor extensions.
     <div class="posts" if="posts">
         <div foreach="posts as post">
             <h2 class="post-title">
-                <a :href="/blog/{post.url}" inner-text="{post.title | capitalize}"></a>
+                <a :href="/blog/{post.url}" inner-text="{post.title | Capitalize}"></a>
             </h2>
-            <div class="post-date" inner-text="{post.date | date:yyyy-MM-dd}"></div>
+            <div class="post-date" inner-text="{post.date | Date('yyyy-MM-dd')}"></div>
             <div class="post-content" inner-html="{post.body}"></div>
         </div>
     </div>
@@ -269,14 +269,14 @@ If the `slug` key is `hello-world`.
 All interpolated values in expressions can be modified using modifiers. Modifiers are applied to the value of the attribute, and they can be chained, like so:
 
 ```html
-<h1 inner-text="{title | uppercase | reverse}"></h1>
+<h1 inner-text="{title | Uppercase | Reverse}"></h1>
 ```
 
 Note that if you have nothing other than the interpolated variable in the attribute, then you can omit the curly brackets, and so 
 this would also work:
 
 ```html
-<h1 inner-text="title | uppercase | reverse"></h1>
+<h1 inner-text="title | Uppercase | Reverse"></h1>
 ```
 
 ### `date`
@@ -284,7 +284,7 @@ this would also work:
 Parses the value into a formatted date string.
 
 ```html
-<p inner-text="published_at | date:YYYY-mm-dd"></p>
+<p inner-text="published_at | Date('YYYY-mm-dd')"></p>
 ```
 
 ### `truncate`
@@ -292,7 +292,7 @@ Parses the value into a formatted date string.
 Truncates the value to the specified length.
 
 ```html
-<p inner-text="{title | truncate:10}"></p>
+<p inner-text="{title | Truncate(10)}"></p>
 ```
 
 This also works on collections, so you can use `truncate` to limit items in an array as well.
@@ -370,10 +370,9 @@ Mdifiers must extend the `Modifier` class, like so:
 
 ```python
 from typing import Any
-from htmtl import Modifier, modifier_name
+from htmtl import Modifier
 
 
-@modifier_name("truncate")
 class Truncate(Modifier):
     def modify(self, value: Any, opts: list[Any]) -> Any:
         if isinstance(value, str) and len(opts) > 0:
@@ -385,9 +384,6 @@ class Truncate(Modifier):
 
         return value
 ```
-
-All modifiers need to have a name (that you will use in your templates), and you can name your modifier
-with the `modifier_name` decorator.
 
 #### List of built-in modifiers
 

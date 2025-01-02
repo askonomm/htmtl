@@ -4,11 +4,11 @@ from .modifier import Modifier
 
 class ExpressionParser:
     __data: dict[str, Any]
-    __expression_modifiers: list[type[Modifier]]
+    __modifiers: list[type[Modifier]]
 
-    def __init__(self, data: dict[str, Any], expression_modifiers: list[type[Modifier]]) -> None:
+    def __init__(self, data: dict[str, Any], modifiers: list[type[Modifier]]) -> None:
         self.__data = data
-        self.__expression_modifiers = expression_modifiers
+        self.__modifiers = modifiers
 
     def parse(self, expression: str) -> Any:
         # no curly brackets means that the whole thing is an interpolation
@@ -45,19 +45,70 @@ class ExpressionParser:
         modifiers = [x.strip() for x in parts[1:]] if len(parts) > 1 else []
 
         for modifier in modifiers:
-            modifier_parts = modifier.split(":")
-            modifier_name = modifier_parts[0].strip()
-            modifier_opts = [x.strip() for x in modifier_parts[1:]] if len(modifier_parts) > 1 else []
-            value = self.__use_modifier(value, modifier_name, modifier_opts)
+            modifier_name = ""
+            args_start = None
+            args_end = None
+            modifier_opts = []
+
+            for idx, char in enumerate(modifier):
+                if char == "(":
+                    args_start = idx + 1
+
+                if char == ")":
+                    args_end = idx
+
+                if args_start is None and args_end is None:
+                    modifier_name += char
+
+            if args_start and args_end:
+                args_str = modifier[args_start:args_end]
+                modifier_opts = self.__parse_args_str_to_args(args_str)
+
+            value = self.__modify_value(value, modifier_name, modifier_opts)
 
         return value
 
-    def __use_modifier(self, value: Any, modifier_name: str, modifier_opts: list[Any]) -> Any:
-        for modifier in self.__expression_modifiers:
-            modifier_instance = modifier()
+    @staticmethod
+    def __parse_args_str_to_args(args_str) -> list[str]:
+        args = []
 
-            if modifier_instance.name == modifier_name:
-                return modifier_instance.modify(value, modifier_opts)
+        for idx, char in enumerate(args_str):
+            if len(args) == 0:
+                args.append("")
+
+            if char == "," and args[-1].count('"') % 2 == 0:
+                args.append("")
+            else:
+                args[-1] += char
+
+        parsed_args = []
+
+        for arg in args:
+            if arg.startswith("'") and arg.endswith("'"):
+                parsed_args.append(arg[1:-1])
+                continue
+
+            if arg.startswith('"') and arg.endswith('"'):
+                parsed_args.append(arg[1:-1])
+                continue
+
+            if all([x in "1234567890" for x in arg.lstrip("-")]):
+                parsed_args.append(int(arg))
+                continue
+
+            if all([x in "1234567890." for x in arg.lstrip("-")]):
+                parsed_args.append(float(arg))
+                continue
+
+            if arg == "true" or arg == "false":
+                parsed_args.append(True if arg == "true" else False)
+
+        return parsed_args
+
+    def __modify_value(self, value: Any, modifier_name: str, modifier_opts: list[Any]) -> Any:
+        for modifier in self.__modifiers:
+            if modifier.__name__ == modifier_name:
+                return modifier().modify(value, modifier_opts)
 
         return value
 
