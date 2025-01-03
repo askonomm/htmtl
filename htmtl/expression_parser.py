@@ -12,10 +12,14 @@ class ExpressionParser:
 
     def parse(self, expression: str) -> Any:
         # no curly brackets means that the whole thing is an interpolation
-        if expression.count("{") != expression.count("}"):
+        if expression.count("{") == 0 and expression.count("}") == 0:
             parsed_interpolation = self.__parse_interpolation(expression)
 
             return parsed_interpolation
+
+        # uneven curly brackets means invalid syntax
+        if expression.count("{") != expression.count("}"):
+            return expression
 
         # otherwise only parts of it are
         parsed_expression = ""
@@ -69,7 +73,7 @@ class ExpressionParser:
         return value
 
     @staticmethod
-    def __parse_args_str_to_args(args_str) -> list[str]:
+    def __parse_args_str_to_args(args_str) -> list[str | int | float | bool]:
         args = []
 
         for idx, char in enumerate(args_str):

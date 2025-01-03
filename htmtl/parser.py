@@ -12,6 +12,9 @@ class Parser(ABC):
         self.__data = data
         self.__expression_parser = expression_parser
 
+    def data(self) -> dict[str, Any]:
+        return self.__data
+
     def expression(self, expression: str) -> Any:
         return self.__expression_parser.parse(expression)
 

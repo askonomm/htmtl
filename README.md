@@ -266,17 +266,23 @@ If the `slug` key is `hello-world`.
 
 ## Modifiers
 
-All interpolated values in expressions can be modified using modifiers. Modifiers are applied to the value of the attribute, and they can be chained, like so:
+All interpolated expressions can be modified using modifiers. Modifiers are applied to the value of the attribute, and they can be chained, like so:
 
 ```html
 <h1 inner-text="{title | Uppercase | Reverse}"></h1>
 ```
 
-Note that if you have nothing other than the interpolated variable in the attribute, then you can omit the curly brackets, and so 
-this would also work:
+Note that if you have nothing other than the interpolated variable in the attribute, then you can omit the curly brackets, and so this would also work:
 
 ```html
 <h1 inner-text="title | Uppercase | Reverse"></h1>
+```
+
+Modifiers can also take arguments which are passed within
+parentheses `(` and `)`, and can be either `int`, `float`, `str` or `bool`. For example:
+
+```html
+<h1 inner-text="some_var | SomeModifier(123, 'asd', true)"></h1>
 ```
 
 ### `date`
@@ -342,10 +348,10 @@ HTMTL is built upon the [Dompa](https://github.com/askonomm/dompa) HTML parser, 
 - `htmtl.parsers.GenericValue` - Parser the `:*` attributes.
 - `htmtl.parsers.If` - Parser the `if` attributes. (**soon**)
 - `htmtl.parsers.Unless` - Parser the `unless` attributes. (**soon**)
-- `htmtl.parsers.InnerPartial` - Parser the `inner-partial` attributes. (**soon**)
+- `htmtl.parsers.InnerPartial` - Parser the `inner-partial` attributes.
 - `htmtl.parsers.InnerHtml` - Parser the `inner-html` attributes.
 - `htmtl.parsers.InnerText` - Parser the `inner-text` attributes.
-- `htmtl.parsers.OuterPartial` - Parser the `outer-partial` attributes. (**soon**)
+- `htmtl.parsers.OuterPartial` - Parser the `outer-partial` attributes.
 - `htmtl.parsers.OuterHtml` - Parser the `outer-html` attributes.
 - `htmtl.parsers.OuterText` - Parser the `outer-text` attributes.
 - `htmtl.parsers.Foreach` - Parses the `foreach` attributes. (**soon**)
