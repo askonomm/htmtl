@@ -285,7 +285,7 @@ parentheses `(` and `)`, and can be either `int`, `float`, `str` or `bool`. For 
 <h1 inner-text="some_var | SomeModifier(123, 'asd', true)"></h1>
 ```
 
-### `date`
+### `Date`
 
 Parses the value into a formatted date string.
 
@@ -293,7 +293,7 @@ Parses the value into a formatted date string.
 <p inner-text="published_at | Date('YYYY-mm-dd')"></p>
 ```
 
-### `truncate`
+### `Truncate`
 
 Truncates the value to the specified length.
 
