@@ -11,7 +11,7 @@ you to use any editor without needing any additional editor extensions.
 - **Conditionals**: You can show or hide blocks using expressions.
 - **Partials**: You can include other templates inside your templates.
 - **Loops**: You can loop over iterable data.
-- **Extendable**: You can implement custom attribute parsers and expression modifiers.
+- **Extendable**: You can implement custom parsers and modifiers.
 
 ## Example syntax
 
@@ -24,7 +24,7 @@ you to use any editor without needing any additional editor extensions.
 <body>
     <h1 inner-text="{title}"></h1>
     
-    <div class="posts" if="posts">
+    <div class="posts" when="posts">
         <div foreach="posts as post">
             <h2 class="post-title">
                 <a :href="/blog/{post.url}" inner-text="{post.title | Capitalize}"></a>
@@ -182,14 +182,14 @@ Results in:
 </div>
 ```
 
-### `if`
+### `when`
 
 Removes the element if the attribute is false-y.
 
 HTMTL template where `show` key is `False`:
 
 ```html
-<div if="show">Hello, World!</div>
+<div when="show">Hello, World!</div>
 ```
 
 Results in:
@@ -198,14 +198,14 @@ Results in:
 <!-- Empty -->
 ```
 
-### `unless`
+### `when-not`
 
 Removes the element if the attribute is truthy.
 
 HTMTL template where `hide` key is `True`:
 
 ```html
-<div unless="hide">Hello, World!</div>
+<div when-not="hide">Hello, World!</div>
 ```
 
 Results in:
@@ -346,8 +346,8 @@ HTMTL is built upon the [Dompa](https://github.com/askonomm/dompa) HTML parser, 
 #### List of built-in parsers
 
 - `htmtl.parsers.GenericValue` - Parser the `:*` attributes.
-- `htmtl.parsers.If` - Parser the `if` attributes. (**soon**)
-- `htmtl.parsers.Unless` - Parser the `unless` attributes. (**soon**)
+- `htmtl.parsers.When` - Parser the `when` attributes.
+- `htmtl.parsers.WhenNot` - Parser the `when-not` attributes.
 - `htmtl.parsers.InnerPartial` - Parser the `inner-partial` attributes.
 - `htmtl.parsers.InnerHtml` - Parser the `inner-html` attributes.
 - `htmtl.parsers.InnerText` - Parser the `inner-text` attributes.

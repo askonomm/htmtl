@@ -11,6 +11,8 @@ from .parsers.outer_text import OuterText
 from .modifier import Modifier
 from .modifiers.truncate import Truncate
 from .expression_parser import ExpressionParser
+from .parsers.when import When
+from .parsers.when_not import WhenNot
 
 
 class Htmtl:
@@ -32,6 +34,8 @@ class Htmtl:
             OuterHtml,
             OuterPartial,
             GenericValue,
+            When,
+            WhenNot,
         ]
 
         # set default expression modifiers
