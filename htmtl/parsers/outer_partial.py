@@ -10,7 +10,7 @@ class OuterPartial(Parser):
     def traverse(self, node: Node) -> Optional[Node]:
         if "outer-partial" in node.attributes:
             template = htmtl.Htmtl(self.expression(node.attributes["outer-partial"]), self.data())
-            replacement_nodes = Dompa(template.html()).nodes()
+            replacement_nodes = Dompa(template.to_html()).get_nodes()
 
             return FragmentNode(children=replacement_nodes)
 
