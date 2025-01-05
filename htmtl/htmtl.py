@@ -1,18 +1,21 @@
 from typing import Any
 from dompa import Dompa
+from dompa.actions import ToHtml
+from dompa.nodes import Node
 from .parser import Parser
 from .parsers.generic_value import GenericValue
 from .parsers.inner_html import InnerHtml
 from .parsers.inner_partial import InnerPartial
 from .parsers.inner_text import InnerText
+from .parsers.iterate import Iterate
 from .parsers.outer_html import OuterHtml
 from .parsers.outer_partial import OuterPartial
 from .parsers.outer_text import OuterText
+from .parsers.when import When
+from .parsers.when_not import WhenNot
 from .modifier import Modifier
 from .modifiers.truncate import Truncate
 from .expression_parser import ExpressionParser
-from .parsers.when import When
-from .parsers.when_not import WhenNot
 
 
 class Htmtl:
@@ -27,6 +30,7 @@ class Htmtl:
 
         # set default attribute parsers
         self.__attribute_parsers = [
+            Iterate,
             InnerText,
             InnerHtml,
             InnerPartial,
@@ -64,7 +68,12 @@ class Htmtl:
             parser_instance = parser(self.__data, expression_parser)
             self.__dom.traverse(parser_instance.traverse)
 
-    def html(self) -> str:
+    def to_html(self) -> str:
         self.__parse()
 
-        return self.__dom.html()
+        return self.__dom.action(ToHtml)
+
+    def nodes(self) -> list[Node]:
+        self.__parse()
+
+        return self.__dom.get_nodes()

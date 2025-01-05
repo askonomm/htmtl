@@ -8,7 +8,7 @@ authors = [
   { name = "Asko Nõmm", email = "asko@nmm.ee" }
 ]
 dependencies = [
-  "dompa>0.6.1"
+  "dompa>0.8.1"
 ]
 classifiers = [
   "Programming Language :: Python :: 3",

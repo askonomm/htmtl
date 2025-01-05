@@ -25,7 +25,7 @@ you to use any editor without needing any additional editor extensions.
     <h1 inner-text="{title}"></h1>
     
     <div class="posts" when="posts">
-        <div foreach="posts as post">
+        <div iterate="posts as post">
             <h2 class="post-title">
                 <a :href="/blog/{post.url}" inner-text="{post.title | Capitalize}"></a>
             </h2>
@@ -50,8 +50,8 @@ A simple example of how to use HTMTL with default configuration looks like this:
 ```python
 from htmtl import Htmtl
 
-htmtl = Htmtl('<p inner-text="Hello {who}"></p>', {'who': 'World'})
-html = htmtl.html() # returns: <p>Hello World</p>
+template = Htmtl('<p inner-text="Hello {who}"></p>', {'who': 'World'})
+html = template.to_html() # returns: <p>Hello World</p>
 ```
 
 ## Attributes
@@ -214,15 +214,14 @@ Results in:
 <!-- Empty -->
 ```
 
-### `foreach`
+### `iterate`
 
 Loops anything iterable. 
 
-For example, to loop over a collection of `posts` and then use `post` as the variable of each iteration, you can do something 
-like this:
+For example, to loop over a collection of `posts` and then use `post` as the variable of each iteration, you can do something like this:
 
 ```php
-<div foreach="posts as post">
+<div iterate="posts as post">
     <h2 inner-text="post.title"></h2>
 </div>
 ```
@@ -231,7 +230,7 @@ If you do not care about using any of the iteration data, you can also entirely 
 like so:
 
 ```php
-<div foreach="posts">
+<div iterate="posts">
     ...
 </div>
 ```
@@ -239,7 +238,7 @@ like so:
 And, you can also assign the key of the iteration to a variable, like so:
 
 ```php
-<div foreach="posts as index:post">
+<div iterate="posts as index:post">
     <h2 :class="post-{post.index}" inner-text="post.title"></h2>
 </div>
 ```
@@ -313,12 +312,12 @@ You can add (or replace) parsers in HTMTL when creating a new instance of the `H
 from htmtl import Htmtl
 from htmtl.parsers import InnerText
 
-htmtl = Htmtl('<p inner-text="Hello {who}"></p>', {'who': 'World'})
-htmtl.set_parsers([
+template = Htmtl('<p inner-text="Hello {who}"></p>', {'who': 'World'})
+template.set_parsers([
     InnerText,
 ])
 
-html = htmtl.html() # returns: <p>Hello World</p>
+html = template.to_html() # returns: <p>Hello World</p>
 ```
 
 Prsers must extend the `Parser` class, like so:
@@ -354,7 +353,7 @@ HTMTL is built upon the [Dompa](https://github.com/askonomm/dompa) HTML parser, 
 - `htmtl.parsers.OuterPartial` - Parser the `outer-partial` attributes.
 - `htmtl.parsers.OuterHtml` - Parser the `outer-html` attributes.
 - `htmtl.parsers.OuterText` - Parser the `outer-text` attributes.
-- `htmtl.parsers.Foreach` - Parses the `foreach` attributes. (**soon**)
+- `htmtl.parsers.Iterate` - Parses the `iterate` attributes.
 
 ### Modifiers
 
@@ -364,12 +363,12 @@ You can add (or replace) modifiers in HTMTL when creating a new instance of the 
 from htmtl import Htmtl
 from htmtl.modifiers import Truncate
 
-htmtl = Htmtl('<p inner-text="Hello {who}"></p>', {'who': 'World'})
-htmtl.set_modifiers([
+template = Htmtl('<p inner-text="Hello {who}"></p>', {'who': 'World'})
+template.set_modifiers([
     Truncate,
 ])
 
-html = htmtl.html() # returns: <p>Hello World</p>
+html = template.to_html() # returns: <p>Hello World</p>
 ```
 
 Mdifiers must extend the `Modifier` class, like so:
