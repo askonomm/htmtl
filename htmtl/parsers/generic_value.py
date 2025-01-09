@@ -9,10 +9,10 @@ class GenericValue(Parser):
 
         for key, val in node.attributes.items():
             if key.startswith(":"):
-                new_attrs[key[1:]] = self.expression(val)
+                new_attrs[key[1:]] = self.parse_expression(val)
             else:
                 new_attrs[key] = val
 
         node.attributes = new_attrs
-        
+
         return node

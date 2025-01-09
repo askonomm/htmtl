@@ -37,7 +37,8 @@ class ExpressionParser:
 
             if interp_start is not None and interp_end is not None:
                 interp = expression[interp_start:interp_end]
-                parsed_expression = parsed_expression.replace(interp, self.__parse_interpolation(interp[1:-1]))
+                parsed_interp = self.__parse_interpolation(interp[1:-1])
+                parsed_expression = parsed_expression.replace(interp, parsed_interp)
                 interp_start = None
                 interp_end = None
 
@@ -117,6 +118,10 @@ class ExpressionParser:
         return value
 
     def __var_to_val(self, var: str) -> Any:
+        """
+        Turns a expression var into the value it maps to
+        in the data dictionary.
+        """
         parts = var.split(".")
         value = self.__data
 

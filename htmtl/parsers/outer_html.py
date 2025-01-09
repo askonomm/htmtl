@@ -9,6 +9,8 @@ from ..parser import Parser
 class OuterHtml(Parser):
     def traverse(self, node: Node) -> Optional[Node]:
         if "outer-html" in node.attributes:
-            return FragmentNode(children=Dompa(self.expression(node.attributes["outer-html"])).nodes())
+            exp = self.parse_expression(node.attributes["outer-html"])
+
+            return FragmentNode(children=Dompa(exp).get_nodes())
 
         return node

@@ -1,10 +1,11 @@
 from collections.abc import Iterable
 from typing import Optional
 
-from dompa.nodes.actions import ToHtml
+from dompa.nodes.serializers import ToHtml
 from dompa.nodes import Node, FragmentNode
 from ..parser import Parser
 import htmtl
+
 
 class IterateOp:
     var: str
@@ -22,11 +23,11 @@ class Iterate(Parser):
         if "iterate" in node.attributes:
             replacement_nodes = []
             iterate_op = self.__parse_exp(node.attributes["iterate"])
-            collection = self.expression(iterate_op.var)
+            collection = self.parse_expression(iterate_op.var)
             node.attributes.pop("iterate")
 
             if isinstance(collection, Iterable):
-                data = self.data()
+                data = self.get_data()
 
                 for idx, item in enumerate(collection):
                     if iterate_op.iter_var_as:
@@ -35,8 +36,8 @@ class Iterate(Parser):
                     if iterate_op.iter_index_as:
                         data[iterate_op.iter_index_as] = idx
 
-                    template = htmtl.Htmtl(node.action(ToHtml), data)
-                    template_nodes = template.nodes()
+                    template = htmtl.Htmtl(node.serialize(ToHtml), data)
+                    template_nodes = template.get_nodes()
 
                     if len(template_nodes) > 0:
                         replacement_nodes.append(template_nodes[0])

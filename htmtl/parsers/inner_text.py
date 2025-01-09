@@ -7,7 +7,8 @@ from ..parser import Parser
 class InnerText(Parser):
     def traverse(self, node: Node) -> Optional[Node]:
         if "inner-text" in node.attributes:
-            node.children = [TextNode(value=self.expression(node.attributes["inner-text"]))]
+            exp = self.parse_expression(node.attributes["inner-text"])
+            node.children = [TextNode(value=exp)]
             node.attributes.pop("inner-text")
 
         return node

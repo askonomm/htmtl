@@ -12,10 +12,16 @@ class Parser(ABC):
         self.__data = data
         self.__expression_parser = expression_parser
 
-    def data(self) -> dict[str, Any]:
+    def get_data(self) -> dict[str, Any]:
+        """
+        Return the data dictionary.
+        """
         return self.__data
 
-    def expression(self, expression: str) -> Any:
+    def parse_expression(self, expression: str) -> Any:
+        """
+        Parses a given expression.
+        """
         return self.__expression_parser.parse(expression)
 
     @abstractmethod

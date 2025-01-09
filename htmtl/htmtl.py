@@ -1,6 +1,6 @@
 from typing import Any
 from dompa import Dompa
-from dompa.actions import ToHtml
+from dompa.serializers import ToHtml
 from dompa.nodes import Node
 from .parser import Parser
 from .parsers.generic_value import GenericValue
@@ -29,7 +29,7 @@ class Htmtl:
         self.__data = data or {}
 
         # set default attribute parsers
-        self.__attribute_parsers = [
+        self.__parsers = [
             Iterate,
             InnerText,
             InnerHtml,
@@ -43,7 +43,7 @@ class Htmtl:
         ]
 
         # set default expression modifiers
-        self.__expression_modifiers = [
+        self.__modifiers = [
             Truncate,
         ]
 
@@ -62,18 +62,24 @@ class Htmtl:
         self.__modifiers = modifiers
 
     def __parse(self) -> None:
-        expression_parser = ExpressionParser(self.__data, self.__expression_modifiers)
+        expression_parser = ExpressionParser(self.__data, self.__modifiers)
 
-        for parser in self.__attribute_parsers:
+        for parser in self.__parsers:
             parser_instance = parser(self.__data, expression_parser)
             self.__dom.traverse(parser_instance.traverse)
 
     def to_html(self) -> str:
+        """
+        Conver the template into HTML.
+        """
         self.__parse()
 
-        return self.__dom.action(ToHtml)
+        return self.__dom.serialize(ToHtml)
 
-    def nodes(self) -> list[Node]:
+    def get_nodes(self) -> list[Node]:
+        """
+        Return the node tree representation of the template.
+        """
         self.__parse()
 
         return self.__dom.get_nodes()

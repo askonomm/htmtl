@@ -1,0 +1,22 @@
+version = 1
+requires-python = ">=3.10"
+
+[[package]]
+name = "dompa"
+version = "0.9.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/b4/38/ad2854ba2d54913daf35c93ac27e84852f2e2dbbb1ed2c2d23e4602465db/dompa-0.9.0.tar.gz", hash = "sha256:95c2bf63e360c65e402bc8dfe340f0a26b0dd099011a89f70a1c3af387e5223c", size = 11743 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/8b/71/dd778341afa58e3a57b82f7de35564d833e34b1b130c9cffcc408de6d78b/dompa-0.9.0-py3-none-any.whl", hash = "sha256:d33fe9021a1f9f833a01f756255790cf5bbb75bc9874e868b41fb589fdd21ae5", size = 13242 },
+]
+
+[[package]]
+name = "htmtl"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "dompa" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "dompa", specifier = ">=0.9.0" }]
